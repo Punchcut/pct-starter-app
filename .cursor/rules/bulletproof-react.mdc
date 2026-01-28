@@ -1,6 +1,6 @@
 ---
-description: Bulletproof React structure and conventions for this starter app
-alwaysApply: true
+description: Apply when creating new features, adding new folders/structure, or when the task involves architectural decisions about where code should live. Skip for localized tasks where placement is obvious (e.g. "add a button component" clearly goes in components).
+alwaysApply: false
 ---
 
 # Bulletproof React structure
