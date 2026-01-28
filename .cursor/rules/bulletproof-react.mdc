@@ -1,0 +1,72 @@
+---
+description: Bulletproof React structure and conventions for this starter app
+alwaysApply: true
+---
+
+# Bulletproof React structure
+
+This app follows the [Bulletproof React](https://github.com/alan2207/bulletproof-react) architecture: a feature-based structure that keeps clean boundaries, scales with the codebase, and keeps the team aligned. Adapt the principles to what fits; stay consistent.
+
+## Principles (from Bulletproof React)
+
+- **Clean boundaries** between app, features, and shared code
+- **Unidirectional flow**: shared → features → app. The app composes features; features only use shared code; no feature imports another feature
+- **Colocate** code as close as possible to where it’s used
+- **One feature, one folder** – new capabilities live in `src/features/<name>/`
+- Use **absolute imports** (`@/...`) so paths stay stable when files move
+
+## Folders (this app)
+
+Aligned with Bulletproof React, adapted for Next.js App Router:
+
+- **`src/app/`** – Application layer: routes, layout, global providers. Keep route files thin; delegate to features.
+- **`src/features/<feature>/`** – Feature modules. Each can have (only what the feature needs):
+  - `api/` – exported API request declarations and api hooks related to a specific feature
+  - `assets/` - assets folder can contain all the static files for a specific feature
+  - `components/` – Feature-specific UI
+  - `hooks/` – Feature-specific hooks (optional)
+  - `stores/` – Feature state stores (optional)
+  - `types/` – Feature TypeScript types (optional)
+  - `utils/` – Feature utilities (optional)
+- **`src/components/`** – Shared components used across the app (e.g. `ui/` for ShadCN).
+- **`src/hooks/`** – Shared hooks (optional).
+- **`src/lib/`** – Reusable libraries and clients (e.g. `openai.ts`, API client).
+- **`src/types/`** – Shared types (optional).
+- **`src/utils/`** – Shared utility functions (optional).
+
+If many API calls are shared across features, a top-level `src/api/` (or keeping request declarations in `lib/`) is acceptable instead of duplicating in every feature.
+
+## Rules
+
+1. **Import from the feature’s public API** – Prefer `@/features/<feature>` (or direct files like `@/features/<feature>/components/...`). Avoid deep internal paths when a feature exposes an index; if you use barrel exports, be aware they can hurt tree-shaking, so direct imports are fine.
+2. **No cross-feature imports** – Features must not import from other features. Compose features at the app level (e.g. in `src/app/` pages/layouts).
+3. **Secrets only on the server** – Use `OPENAI_API_KEY` and similar only in server actions, route handlers, or server components. Never in client components or `"use client"` files.
+4. **Server actions for AI / server-only work** – Put AI and other server-only logic in `"use server"` functions under `features/<feature>/api/` and call them from client components.
+5. **Shared UI** – Use ShadCN in `src/components/ui/`. Add with `npx shadcn@latest add <component>`.
+
+## Naming and style
+
+- **Component files**: PascalCase to match the component name (e.g. `HaikuCard.tsx`, `Button.tsx`).
+- **Other files** (hooks, utils, actions, types): camelCase (e.g. `useHaiku.ts`, `generateHaikuAction.ts`, `utils.ts`).
+- **Folders**: lowercase for standard folders (`components`, `api`, `hooks`); camelCase or lowercase for feature names (e.g. `myFeature` or `haiku`).
+- **Components (in code)**: PascalCase.
+- Keep components focused; avoid large components with nested render functions. Extract UI units into separate components.
+
+## Example: adding a new feature
+
+```
+src/features/myFeature/
+  api/
+    myAction.ts        # "use server" if it uses secrets or server-only APIs
+  components/
+    MyWidget.tsx
+  index.ts             # optional: export public API (e.g. MyWidget, myAction)
+```
+
+In a page: `import { MyWidget } from "@/features/myFeature";` (or import directly from `@/features/myFeature/components/MyWidget` if you avoid barrels).
+
+## Reference
+
+- [Bulletproof React – Project Structure](https://github.com/alan2207/bulletproof-react/blob/master/docs/project-structure.md)
+- [Bulletproof React – API Layer](https://github.com/alan2207/bulletproof-react/blob/master/docs/api-layer.md)
+- [Bulletproof React – Components and Styling](https://github.com/alan2207/bulletproof-react/blob/master/docs/components-and-styling.md)
