@@ -13,5 +13,6 @@ Keep the codebase clean and predictable so AI assistants can help add features w
 - **TypeScript**
 - **Tailwind CSS** + **ShadCN** for UI
 - **OpenAI** (Responses API) for AI features
+- **Zustand** for state management
 
 See the Cursor rules for detailed structure and conventions.
